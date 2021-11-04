@@ -3,26 +3,32 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
 
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
+
+    private SensorManager sensorManager;
     private Thermometer thermometer;
     private float temperature;
-    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         thermometer = (Thermometer) findViewById(R.id.thermometer);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        simulateAmbientTemperature();
+        loadAmbientTemperature();
     }
 
     @Override
@@ -31,28 +37,32 @@ public class MainActivity extends AppCompatActivity {
         unregisterAll();
     }
 
-    private void simulateAmbientTemperature() {
-        timer = new Timer();
 
-        timer.scheduleAtFixedRate(new TimerTask() {
+    private void loadAmbientTemperature() {
+        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
 
-            @Override
-            public void run() {
-                temperature = Utils.randInt(-10, 35);
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        thermometer.setCurrentTemp(temperature);
-                        getSupportActionBar().setTitle(getString(R.string.app_name) + " : " + temperature);
-                    }
-                });
-            }
-        }, 0, 3500);
+        if (sensor != null) {
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
+        } else {
+            Toast.makeText(this, "El dispositivo no cuenta con sensor de temperatura !", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void unregisterAll() {
-        timer.cancel();
+        sensorManager.unregisterListener(this);
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        if (sensorEvent.values.length > 0) {
+            temperature = sensorEvent.values[0];
+            thermometer.setCurrentTemp(temperature);
+            getSupportActionBar().setTitle(getString(R.string.app_name) + " : " + temperature);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
 }

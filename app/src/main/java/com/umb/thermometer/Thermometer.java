@@ -21,20 +21,17 @@ public class Thermometer extends View {
     private Paint innerPaint;
     private Paint degreePaint, graduationPaint;
 
-    private static final int GRADUATION_TEXT_SIZE = 16; // in sp
+    private static final int GRADUATION_TEXT_SIZE = 16;
     private static float DEGREE_WIDTH = 30;
     private static final int NB_GRADUATIONS = 8;
     public static final float MAX_TEMP = 50, MIN_TEMP = -30;
     private static final float RANGE_TEMP = 80;
-    private static final int NB_GRADUATIONS_F = 8;
-    private static final float MAX_TEMP_F = 120, MIN_TEMP_F = -30;
-    private static final float RANGE_TEMP_F = 150;
-    private int nbGraduations = NB_GRADUATIONS;
-    private float maxTemp = MAX_TEMP;
-    private float minTemp = MIN_TEMP;
-    private float rangeTemp = RANGE_TEMP;
+    private final int nbGraduations = NB_GRADUATIONS;
+    private final float maxTemp = MAX_TEMP;
+    private final float minTemp = MIN_TEMP;
+    private final float rangeTemp = RANGE_TEMP;
     private float currentTemp = MIN_TEMP;
-    private Rect rect = new Rect();
+    private final Rect rect = new Rect();
 
     public Thermometer(Context context) {
         super(context);
@@ -61,10 +58,6 @@ public class Thermometer extends View {
         }
 
         invalidate();
-    }
-
-    public float getMinTemp() {
-        return minTemp;
     }
 
     public void init(Context context, AttributeSet attrs) {
@@ -109,21 +102,6 @@ public class Thermometer extends View {
 
     }
 
-    public void changeUnit(boolean isCelsius) {
-        if (isCelsius) {
-            nbGraduations = NB_GRADUATIONS;
-            maxTemp = MAX_TEMP;
-            minTemp = MIN_TEMP;
-            rangeTemp = RANGE_TEMP;
-        } else {
-            nbGraduations = NB_GRADUATIONS_F;
-            maxTemp = MAX_TEMP_F;
-            minTemp = MIN_TEMP_F;
-            rangeTemp = RANGE_TEMP_F;
-        }
-
-        invalidate();
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
